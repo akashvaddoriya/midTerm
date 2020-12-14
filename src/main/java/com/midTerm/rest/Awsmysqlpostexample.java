@@ -17,6 +17,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+
+
 import java.sql.Statement;
 
 
@@ -178,6 +181,65 @@ public class Awsmysqlpostexample
 		return Response.status(200).entity(mainobj.toString()).build();
 	}
 	
+	
+	@GET
+	@Path("/getAccountsByProductType/{type}")
+	@Produces(MediaType.APPLICATION_JSON)
+	
+	public Response getAccountsByProductType(@PathParam("type") String type) {
+		
+		Sqlconnector connection = new Sqlconnector();	
+		con = connection.getConnection();
+		
+		try {
+			stmt = con.createStatement();
+			String q = "select t.NAME,t.PRODUCT_TYPE_CD,p.PRODUCT_CD,p.DATE_OFFERED,a.ACCOUNT_ID,a.AVAIL_BALANCE,a.LAST_ACTIVITY_DATE,a.OPEN_DATE,a.PENDING_BALANCE,a.STATUS from product_type t,product p,account a where t.PRODUCT_TYPE_CD = p.PRODUCT_TYPE_CD and p.PRODUCT_CD = a.PRODUCT_CD and t.PRODUCT_TYPE_CD =\'"+type+"\'";
+			rs = stmt.executeQuery(q);
+			
+			
+				while(rs.next()) 
+				{
+					
+					childObj = new JSONObject();
+					
+					
+					//childObject.accumulate("Account ID", rs.getString("ACCOUN_ID"));
+					childObj.accumulate("Product Name", rs.getString("NAME"));
+					childObj.accumulate("Product Type Code", rs.getString("PRODUCT_TYPE_CD"));
+					childObj.accumulate("Product Code", rs.getString("PRODUCT_CD"));
+					childObj.accumulate("Date Offered", rs.getString("DATE_OFFERED"));
+					childObj.accumulate("Account ID", rs.getString("ACCOUNT_ID"));
+					childObj.accumulate("Available Balance", rs.getString("AVAIL_BALANCE"));
+					childObj.accumulate("Last Activity Date", rs.getString("LAST_ACTIVITY_DATE"));
+					childObj.accumulate("Open Date", rs.getString("OPEN_DATE"));
+					childObj.accumulate("Panding Balance", rs.getString("PENDING_BALANCE"));
+					childObj.accumulate("Status", rs.getString("STATUS"));
+					
+					jsonArray.put(childObj);
+					
+				}
+				mainobj.put("Customers",jsonArray);
+				
+				if (!mainobj.isEmpty())
+				{
+					return Response.ok().entity(mainobj.toString()).build();
+				}
+				else
+				{
+					mainobj.accumulate("Status", 404);
+					mainobj.accumulate("Message", "Content Not Found!");
+					return Response.status(Response.Status.NOT_FOUND).entity(mainobj.toString()).build();
+				}
+			}
+			catch(SQLException e) {
+			e.printStackTrace();
+			mainobj.accumulate("Status", 204);
+			mainobj.accumulate("Message", e.getMessage());
+		}
+		
+		return Response.noContent().entity(mainobj.toString()).build();
+
+	}
 	
 
 }
