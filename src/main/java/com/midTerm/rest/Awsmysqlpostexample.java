@@ -24,7 +24,7 @@ import java.sql.Statement;
 
 
 
-@Path("/aws")
+@Path("aws")
 
 public class Awsmysqlpostexample 
 {
@@ -55,20 +55,21 @@ public class Awsmysqlpostexample
 			{
 				childObj = new JSONObject();
 				
-				childObj.accumulate("customerNumber", rs.getString("employeeNumber"));
-				childObj.accumulate("customerName", rs.getString("employeeNumber"));
-				childObj.accumulate("addressLine1", rs.getString("employeeNumber"));
-				childObj.accumulate("addressLine2", rs.getString("employeeNumber"));
-				childObj.accumulate("postalCode", rs.getString("employeeNumber"));
-				childObj.accumulate("city", rs.getString("employeeNumber"));
-				childObj.accumulate("country", rs.getString("employeeNumber"));
-				childObj.accumulate("creditLimit", rs.getString("employeeNumber"));
+				childObj.accumulate("Department_id", rs.getString("DEPT_ID"));
+				childObj.accumulate("Department_name", rs.getString("NAME"));
+				childObj.accumulate("Employee_id", rs.getString("EMP_ID"));
+				childObj.accumulate("FirstName", rs.getString("FIRST_NAME"));
+				childObj.accumulate("LastName", rs.getString("LAST_NAME"));
+				childObj.accumulate("StartDate", rs.getString("START_DATE"));
+				childObj.accumulate("Title", rs.getString("TITLE"));
+				childObj.accumulate("BranchId", rs.getString("ASSIGNED_BRANCH_ID"));
+				childObj.accumulate("SuperiorEmpId", rs.getString("SUPERIOR_EMP_ID"));
 				
 				
 				jsonArray.put(childObj);
 	
 			}
-			mainobj.put("customers",jsonArray);
+			mainobj.put("Employees",jsonArray);
 		}
 		catch(SQLException e) 
 		{
@@ -94,7 +95,7 @@ public class Awsmysqlpostexample
 	
 	
 	@GET
-	@Path("/getEmp2")
+	@Path("/getCustomer")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getEmployee2() 
 	{	
@@ -110,20 +111,21 @@ public class Awsmysqlpostexample
 			{
 				childObj = new JSONObject();
 				
-				childObj.accumulate("customer ID", rs.getString("individual"));
-				childObj.accumulate("customer BD", rs.getString("individual"));
-				childObj.accumulate("Lastname", rs.getString("individual"));
-				childObj.accumulate("Firstname", rs.getString("individual"));
-				childObj.accumulate("Address", rs.getString("customer"));
-				childObj.accumulate("city", rs.getString("customer"));
-				childObj.accumulate("Postalcode", rs.getString("customer"));
-				childObj.accumulate("state", rs.getString("customer"));
+				childObj.accumulate("customer ID", rs.getString("CUST_ID"));
+				childObj.accumulate("customer BD", rs.getString("BIRTH_DATE"));
+				childObj.accumulate("Lastname", rs.getString("LAST_NAME"));
+				childObj.accumulate("Firstname", rs.getString("FIRST_NAME"));
+				childObj.accumulate("Address", rs.getString("ADDRESS"));
+				childObj.accumulate("city", rs.getString("CITY"));
+				childObj.accumulate("Postalcode", rs.getString("POSTAL_CODE"));
+				childObj.accumulate("state", rs.getString("STATE"));
 				
 				
 				jsonArray.put(childObj);
 	
 			}
 			mainobj.put("customers",jsonArray);
+			//mainobj.put("individual", jsonArray);
 		}
 		catch(SQLException e) 
 		{
@@ -135,7 +137,7 @@ public class Awsmysqlpostexample
 			{
 				con.close();
 				stmt.close();
-				rs.close();
+				//rs.close();
 			}
 			catch(SQLException e)
 			{
@@ -146,163 +148,10 @@ public class Awsmysqlpostexample
 		return Response.status(200).entity(mainobj.toString()).build();	
 	}
 	
-	@POST
-	@Path("/createEmp")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response createEmployee(Employees employees)
-	{
-		Sqlconnector connection = new Sqlconnector();
-		
-		con = connection.getConnection();
-		
-		try 
-		{
-			
-			String query = "INSERT INTO `classicmodels`.`employees`(`employeeNumber`,`lastName`, `firstName`, `extension`, `email`, `officeCode`, `reportsTo`, `jobTitle`) VALUES(?,?,?,?,?,?,?,?)";
-			
-			preparedStatement = con.prepareStatement(query);
-				
-			preparedStatement.setInt(1,employees.getEmployeeNumber());
-			preparedStatement.setString(2,employees.getLastName());
-			preparedStatement.setString(3,employees.getFirstName());
-			preparedStatement.setString(4,employees.getExtension());
-			preparedStatement.setString(5,employees.getEmail());
-			preparedStatement.setString(6, employees.getOfficeCode());
-			preparedStatement.setInt(7,employees.getReportsTo());
-			preparedStatement.setString(8,employees.getJobTitle()); 
-			
-			int rowCount = preparedStatement.executeUpdate();
-			
-			if(rowCount>0)
-			{
-				System.out.println("Record inserted Successfully");
-				
-				mainobj.accumulate("status", 201);
-				mainobj.accumulate("message", "Successfully Inserted");
-			}
-			else
-			{
-							
-				mainobj.accumulate("status", 500);
-				mainobj.accumulate("message", "Something Wrong");
-			}
-			
-		}
-		catch(SQLException e) {  
-			mainobj.accumulate("status", 500);
-			mainobj.accumulate("message", e.getMessage());
-		}
-		finally {
-			try {
-				con.close();
-				preparedStatement.close();
-			}
-			catch(SQLException e)
-			{
-				System.out.println("Finally Block SQL Exception : "+e.getMessage());
-			}
-		}
-		return Response.status(201).entity(mainobj.toString()).build();
-	}
+	
+	
 	@GET
-	@Path("/office/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	
-	public Response getoffice(@PathParam("id") String id) {
-		
-		Sqlconnector connection = new Sqlconnector();	
-		con = connection.getConnection();
-		
-		try {
-			stmt = con.createStatement();
-			String query = "Select * from offices where officeCode = "+id;
-			rs = stmt.executeQuery(query);
-			
-				while(rs.next()) 
-				{
-					mainobj.accumulate("ID", rs.getString("officeCode"));
-					mainobj.accumulate("City", rs.getString("city"));
-					mainobj.accumulate("Phone", rs.getString("phone"));
-					mainobj.accumulate("addressLine1", rs.getString("addressLine1"));
-					mainobj.accumulate("addressLine2", rs.getString("addressLine2"));
-					mainobj.accumulate("state", rs.getString("state"));
-					mainobj.accumulate("country", rs.getString("country"));
-					mainobj.accumulate("postalCode", rs.getString("postalCode"));
-					mainobj.accumulate("territory", rs.getString("territory"));
-		
-				}
-				if (!mainobj.isEmpty())
-				{
-					return Response.ok().entity(mainobj.toString()).build();
-				}
-				else
-				{
-					mainobj.accumulate("Status", 404);
-					mainobj.accumulate("Message", "Content Not Found!");
-					return Response.status(Response.Status.NOT_FOUND).entity(mainobj.toString()).build();
-				}
-			}
-			catch(SQLException e) {
-			
-				mainobj.accumulate("Status", 204);
-				mainobj.accumulate("Message", e.getMessage());
-		}
-		
-		return Response.noContent().entity(mainobj.toString()).build();
-
-	}
-	@PUT
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/updateEmp/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response updateEmployee(@PathParam("id") int id,Employees employees)
-	{
-		Sqlconnector connection = new Sqlconnector();	
-		con = connection.getConnection();
-		Status status = Status.OK;
-		try {
-			String query = "UPDATE `classicmodels`.`employees` SET `employeeNumber` = ?,`lastName` = ?,`firstName` = ?,`extension` = ?,`email` = ?,`officeCode` = ?,`reportsTo` = ?,`jobTitle` = ? WHERE `employeeNumber` ="+id;
-			
-			preparedStatement = con.prepareStatement(query);
-			
-			preparedStatement.setInt(1, employees.getEmployeeNumber());
-			preparedStatement.setString(2, employees.getLastName());
-			preparedStatement.setString(3, employees.getFirstName());
-			preparedStatement.setString(4, employees.getExtension());
-			preparedStatement.setString(5, employees.getEmail());
-			preparedStatement.setString(6, employees.getOfficeCode());
-			preparedStatement.setInt(7, employees.getReportsTo());
-			preparedStatement.setString(8, employees.getJobTitle());
-			
-			
-			
-			int rawCount = preparedStatement.executeUpdate();
-			
-			if(rawCount>0)
-			{
-				status = Status.OK;
-				mainobj.accumulate("Status", Status.OK);
-				mainobj.accumulate("Message", "Data Successfully Updated!!");
-			}
-			else {
-				status = Status.NOT_MODIFIED;
-				mainobj.accumulate("Status", status);
-				mainobj.accumulate("Message", "Something went wrong!!!");
-				
-			}
-			
-			} catch(SQLException e) {
-			e.printStackTrace();
-			status = Status.NOT_MODIFIED;
-			mainobj.accumulate("Status", status);
-			mainobj.accumulate("Message", "Something went wrong!!!");
-			}
-			
-		return Response.status(status).entity(mainobj.toString()).build();
-	}
-	
-	@Path("/deleteEmp/{id}")
+	@Path("/deleteTransaction/{id}")
 	@DELETE
 	public Response deleteEmployee(@PathParam("id") int id)
 	{
@@ -310,7 +159,7 @@ public class Awsmysqlpostexample
 		con = connection.getConnection();
 		
 		try {
-			String query = "Delete from Employee where employeeNumber = "+id;
+			String query = "delete from acc_transaction where TXN_ID = "+id;
 			
 			stmt = con.createStatement();
 			stmt.execute(query);
@@ -328,5 +177,7 @@ public class Awsmysqlpostexample
 		}
 		return Response.status(200).entity(mainobj.toString()).build();
 	}
+	
+	
 
 }

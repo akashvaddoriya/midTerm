@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class Sqlconnector {
 
-	private String dbName = "classicmodels";
+	private String dbName = "midterm";
 	private String dbuserName = "admin";
 	private String dbPass = "ROOT1234";
 	private String hostName = "database-1.clfxqwdrrzza.us-east-2.rds.amazonaws.com";
