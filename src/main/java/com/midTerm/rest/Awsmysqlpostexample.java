@@ -99,7 +99,7 @@ public class Awsmysqlpostexample
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getEmployee2() 
 	{	
-		Sqlconnector connection = new Sqlconnector();	
+		Sqlconnector connection = new Sqlconnector();	 
 		con = connection.getConnection();
 		
 		try 
@@ -137,7 +137,7 @@ public class Awsmysqlpostexample
 			{
 				con.close();
 				stmt.close();
-				//rs.close();
+				rs.close();
 			}
 			catch(SQLException e)
 			{
