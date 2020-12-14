@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -16,16 +15,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-
 import java.sql.Statement;
 
 
+
+
+
+
 @Path("/aws")
-public class Awsmysqlpostexample {
+
+public class Awsmysqlpostexample 
+{
 	
 	Connection con = null;
 	Statement stmt = null;
@@ -37,49 +39,45 @@ public class Awsmysqlpostexample {
 	JSONObject childObj = new JSONObject();
 	
 	@GET
-	@Path("/demo")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response demo()
-	{
-		mainobj.accumulate("name", "Akash");
-		
-		return Response.status(200).entity(mainobj.toString()).build();
-	}
-	
-	
-	
-	@GET
 	@Path("/getEmp")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getEmployee()
-	{
-		Sqlconnector connection = new Sqlconnector();
-		
+	public Response getEmployee() 
+	{	
+		Sqlconnector connection = new Sqlconnector();	
 		con = connection.getConnection();
 		
 		try 
 		{
 			stmt = con.createStatement();
+			rs = stmt.executeQuery("select * from department d,employee e where d.DEPT_ID = e.DEPT_ID and d.NAME = 'Operations';");
 			
-			rs = stmt.executeQuery("Select * from employees");
-			
-			while(rs.next())
+			while(rs.next()) 
 			{
 				childObj = new JSONObject();
-				childObj.accumulate("Employee Number", rs.getString("employeeNumber"));
-				childObj.accumulate("LastName", rs.getString(2));
-				childObj.accumulate("FirstName", rs.getString("firstname"));
+				
+				childObj.accumulate("customerNumber", rs.getString("employeeNumber"));
+				childObj.accumulate("customerName", rs.getString("employeeNumber"));
+				childObj.accumulate("addressLine1", rs.getString("employeeNumber"));
+				childObj.accumulate("addressLine2", rs.getString("employeeNumber"));
+				childObj.accumulate("postalCode", rs.getString("employeeNumber"));
+				childObj.accumulate("city", rs.getString("employeeNumber"));
+				childObj.accumulate("country", rs.getString("employeeNumber"));
+				childObj.accumulate("creditLimit", rs.getString("employeeNumber"));
+				
 				
 				jsonArray.put(childObj);
 	
 			}
-			mainobj.put("Employee",jsonArray);
+			mainobj.put("customers",jsonArray);
 		}
-		catch(SQLException e) {  
+		catch(SQLException e) 
+		{
 			System.out.println("SQL Exception : "+e.getMessage());
 		}
-		finally {
-			try {
+		finally 
+		{
+			try 
+			{
 				con.close();
 				stmt.close();
 				rs.close();
@@ -89,9 +87,64 @@ public class Awsmysqlpostexample {
 				System.out.println("Finally Block SQL Exception : "+e.getMessage());
 			}
 		}
-		return Response.status(200).entity(mainobj.toString()).build();
+		
+		return Response.status(200).entity(mainobj.toString()).build();	
 	}
 	
+	
+	
+	@GET
+	@Path("/getEmp2")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getEmployee2() 
+	{	
+		Sqlconnector connection = new Sqlconnector();	
+		con = connection.getConnection();
+		
+		try 
+		{
+			stmt = con.createStatement();
+			rs = stmt.executeQuery("select i.CUST_ID,i.BIRTH_DATE,i.FIRST_NAME,i.LAST_NAME,c.ADDRESS,c.CITY,c.POSTAL_CODE,c.STATE from customer c,individual i where c.CUST_ID = i.CUST_ID and i.FIRST_NAME like '%fra%';;");
+			
+			while(rs.next()) 
+			{
+				childObj = new JSONObject();
+				
+				childObj.accumulate("customer ID", rs.getString("individual"));
+				childObj.accumulate("customer BD", rs.getString("individual"));
+				childObj.accumulate("Lastname", rs.getString("individual"));
+				childObj.accumulate("Firstname", rs.getString("individual"));
+				childObj.accumulate("Address", rs.getString("customer"));
+				childObj.accumulate("city", rs.getString("customer"));
+				childObj.accumulate("Postalcode", rs.getString("customer"));
+				childObj.accumulate("state", rs.getString("customer"));
+				
+				
+				jsonArray.put(childObj);
+	
+			}
+			mainobj.put("customers",jsonArray);
+		}
+		catch(SQLException e) 
+		{
+			System.out.println("SQL Exception : "+e.getMessage());
+		}
+		finally 
+		{
+			try 
+			{
+				con.close();
+				stmt.close();
+				rs.close();
+			}
+			catch(SQLException e)
+			{
+				System.out.println("Finally Block SQL Exception : "+e.getMessage());
+			}
+		}
+		
+		return Response.status(200).entity(mainobj.toString()).build();	
+	}
 	
 	@POST
 	@Path("/createEmp")
