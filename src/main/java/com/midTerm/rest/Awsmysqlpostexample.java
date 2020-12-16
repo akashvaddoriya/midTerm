@@ -181,7 +181,7 @@ public class Awsmysqlpostexample
 				System.out.println("Finally Block SQL Exception : " + e.getMessage());
 			}
 		}
-		return Response.status(200).entity(mainobj.toString()).build();
+		return Response.status(status).entity(mainobj.toString()).build();
 	}
 	
 	
