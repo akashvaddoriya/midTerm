@@ -4,23 +4,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-
-
-import java.sql.Statement;
 
 
 
@@ -155,19 +151,23 @@ public class Awsmysqlpostexample
 	
 	@GET
 	@Path("/deleteTransaction/{id}")
-	@DELETE
 	public Response deleteEmployee(@PathParam("id") int id)
 	{
 		Sqlconnector connection = new Sqlconnector();	
 		con = connection.getConnection();
-		
+		int status = 200;
 		try {
 			String query = "delete from acc_transaction where TXN_ID = "+id;
 			
 			stmt = con.createStatement();
 			stmt.execute(query);
+			mainobj.accumulate("Message", "Success");
+			mainobj.accumulate("Status", "200");
 			
 		}catch(SQLException e){
+			mainobj.accumulate("Message", "Error!"+e.getMessage());
+			mainobj.accumulate("Status", "500");
+			status = 500;
 			System.out.println("SQL Exception : " + e.getMessage());
 		}
 		finally {
@@ -241,5 +241,4 @@ public class Awsmysqlpostexample
 
 	}
 	
-
 }
