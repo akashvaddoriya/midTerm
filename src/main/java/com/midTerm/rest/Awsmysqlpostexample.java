@@ -389,4 +389,56 @@ public class Awsmysqlpostexample
 		return Response.status(200).entity(mainobj.toString()).build();	
 	}
 	
+	@POST
+	@Path("/createEmp")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response createCustomer(Customer customer) {
+		Sqlconnector connection = new Sqlconnector();
+
+		con = connection.getConnection();
+
+		int status = 200;
+		try {
+
+			String query = "INSERT INTO customer(CUST_ID,ADDRESS,CITY,CUST_TYPE_CD,FED_ID,POSTAL_CODE,STATE) VALUES (?,?,?,?,?,?,?);";
+
+			preparedStatement = con.prepareStatement(query);
+
+			preparedStatement.setInt(1, customer.getId());
+			preparedStatement.setString(2, customer.getAddress());
+			preparedStatement.setString(3, customer.getCity());
+			preparedStatement.setString(4, customer.getCustType());
+			preparedStatement.setString(5, customer.getFedId());
+			preparedStatement.setString(6, customer.getPostalCode());
+			preparedStatement.setString(7, customer.getState());
+
+			int rowCount = preparedStatement.executeUpdate();
+
+			if (rowCount > 0) {
+				System.out.println("Record Inserted Successfully");
+
+				mainobj.accumulate("status", 200);
+				mainobj.accumulate("message", "Successfully Updated");
+			} else {
+				status = 500;
+				mainobj.accumulate("status", 500);
+				mainobj.accumulate("message", "Something Wrong");
+			}
+
+		} catch (SQLException e) {
+			status = 500;
+			mainobj.accumulate("status", 500);
+			mainobj.accumulate("message", e.getMessage());
+		} finally {
+			try {
+				con.close();
+				preparedStatement.close();
+			} catch (SQLException e) {
+				System.out.println("Finally Block SQL Exception : " + e.getMessage());
+			}
+		}
+		return Response.status(status).entity(mainobj.toString()).build();
+	}
+	
 }
