@@ -291,7 +291,7 @@ public class Awsmysqlpostexample
 	@Path("/updateEmp")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response createEmployee(Customer customer) {
+	public Response updateEmployee(Customer customer) {
 		Sqlconnector connection = new Sqlconnector();
 
 		con = connection.getConnection();
