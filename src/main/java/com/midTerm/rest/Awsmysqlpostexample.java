@@ -441,4 +441,38 @@ public class Awsmysqlpostexample
 		return Response.status(status).entity(mainobj.toString()).build();
 	}
 	
+	@GET
+	@Path("/deleteBusiness/{name}/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteBusiness(@PathParam("name") String name,@PathParam("id") String id) 
+	{	
+		Sqlconnector connection = new Sqlconnector();	
+		con = connection.getConnection();
+		int status = 200;
+		try {
+			String query = "DELETE FROM business WHERE NAME = "+name+" and CUST_ID = "+id+";";
+			
+			stmt = con.createStatement();
+			stmt.execute(query);
+			mainobj.accumulate("Message", "Success");
+			mainobj.accumulate("Status", "200");
+			
+		}catch(SQLException e){
+			mainobj.accumulate("Message", "Error!"+e.getMessage());
+			mainobj.accumulate("Status", "500");
+			status = 500;
+			System.out.println("SQL Exception : " + e.getMessage());
+		}
+		finally {
+			try {
+				con.close();
+				stmt.close();
+			} catch (SQLException e) {
+				System.out.println("Finally Block SQL Exception : " + e.getMessage());
+			}
+		}
+		return Response.status(status).entity(mainobj.toString()).build();
+	}
+	
+	
 }
