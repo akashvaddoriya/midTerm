@@ -2,17 +2,17 @@ package com.midTerm.rest;
 
 public class Branch 
 {
-		public int id;
+		public int BRANCH_ID;
 		public String name;
 		public String address;
 		public String city;
 		public String state;
 		public String zip;
 		public int getId() {
-			return id;
+			return BRANCH_ID;
 		}
-		public void setId(int id) {
-			this.id = id;
+		public void setId(int BRANCH_ID) {
+			this.BRANCH_ID = BRANCH_ID;
 		}
 		public String getName() {
 			return name;
